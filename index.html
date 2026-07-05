@@ -7,16 +7,20 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
+    <svg class="texture-filters" aria-hidden="true" focusable="false">
+      <filter id="finger-sand">
+        <feTurbulence baseFrequency="0.025" numOctaves="2" seed="8" type="fractalNoise" />
+        <feDisplacementMap in="SourceGraphic" scale="0.8" />
+      </filter>
+    </svg>
+
     <main class="app">
       <section id="identityScreen" class="screen">
-        <p class="eyebrow">Tic Tac Toe Online</p>
-        <h1>Wer bist du?</h1>
+        <h1>Schön, dass du bist.</h1>
 
         <div class="choice-grid" aria-label="Spieler auswaehlen">
           <button class="choice-button" type="button" data-player="Dean">Dean</button>
-          <button class="choice-button" type="button" data-player="Andere Person">
-            Eine andere Person
-          </button>
+          <button class="choice-button" type="button" data-player="Gast">Gast</button>
         </div>
       </section>
 

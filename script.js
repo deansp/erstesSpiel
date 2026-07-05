@@ -17,11 +17,11 @@ const choiceButtons = document.querySelectorAll(".choice-button");
 const emptyBoard = ["", "", "", "", "", "", "", "", ""];
 const players = {
   X: "Dean",
-  O: "Andere Person",
+  O: "Gast",
 };
 const symbols = {
   Dean: "X",
-  "Andere Person": "O",
+  Gast: "O",
 };
 const winningLines = [
   [0, 1, 2],
@@ -107,7 +107,7 @@ async function createGame() {
       current_symbol: startSymbol,
       winner: null,
       player_dean: "Dean",
-      player_other: "Andere Person",
+      player_other: "Gast",
     }),
   });
 
@@ -245,7 +245,7 @@ function updateText() {
 
   turnText.textContent = `${currentName} ist am Zug`;
   messageText.textContent =
-    currentSymbol === mySymbol ? "Du bist dran." : "Warte, bis dein Freund gespielt hat.";
+    currentSymbol === mySymbol ? "Du bist dran." : "Warte, bis die andere Person gespielt hat.";
   statusText.textContent = "Online verbunden";
 }
 

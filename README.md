@@ -11,9 +11,9 @@ Ein schlichtes Tic-Tac-Toe-Spiel fuer den Webbrowser. Zwei Personen koennen mit 
 ## Spielidee
 
 - Am Anfang wird gefragt: "Wer bist du?"
-- Du kannst "Dean" oder "Eine andere Person" auswaehlen.
+- Du kannst "Dean" oder "Gast" auswaehlen.
 - Dean spielt mit X.
-- Die andere Person spielt mit O.
+- Gast spielt mit O.
 - Ob Dean oder die andere Person beginnt, wird pro Runde zufaellig entschieden.
 - Oben steht immer, wer gerade am Zug ist.
 - Der Spielstand wird in Supabase gespeichert.
@@ -24,13 +24,14 @@ Ein schlichtes Tic-Tac-Toe-Spiel fuer den Webbrowser. Zwei Personen koennen mit 
 2. Dean waehlt "Dean".
 3. Dean klickt "Link kopieren".
 4. Dean schickt den Link an den Freund.
-5. Der Freund oeffnet den Link und waehlt "Eine andere Person".
+5. Der Freund oeffnet den Link und waehlt "Gast".
 
 ## Dateien
 
 - `index.html`: Aufbau der Seite
 - `style.css`: Farben, Abstaende und Layout
 - `script.js`: Spiellogik
+- `assets/sand-background.png`: Sand-Hintergrund fuer das Design
 
 ## Datenbank
 
