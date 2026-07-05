@@ -93,32 +93,18 @@ h1 {
   flex: 0 0 auto;
 }
 
-.score-row {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
-  margin: 24px 0;
-}
-
-.score-row div {
+.share-box {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
   border: 1px solid var(--line);
   border-radius: 7px;
-  padding: 12px;
+  margin: 24px 0;
+  padding: 14px;
   background: #fbf4eb;
-}
-
-.score-row span {
-  display: block;
-  min-height: 34px;
   color: var(--muted);
-  font-size: 0.86rem;
-  line-height: 1.2;
-}
-
-.score-row strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 1.6rem;
+  line-height: 1.35;
 }
 
 .board {
@@ -176,6 +162,7 @@ h1 {
   color: var(--accent-dark);
   cursor: pointer;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 @media (max-width: 520px) {
@@ -184,6 +171,7 @@ h1 {
   }
 
   .game-header,
+  .share-box,
   .footer {
     align-items: stretch;
     flex-direction: column;

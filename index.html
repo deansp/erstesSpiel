@@ -9,7 +9,7 @@
   <body>
     <main class="app">
       <section id="identityScreen" class="screen">
-        <p class="eyebrow">Tic Tac Toe</p>
+        <p class="eyebrow">Tic Tac Toe Online</p>
         <h1>Wer bist du?</h1>
 
         <div class="choice-grid" aria-label="Spieler auswaehlen">
@@ -23,31 +23,21 @@
       <section id="gameScreen" class="screen is-hidden">
         <header class="game-header">
           <div>
-            <p class="eyebrow">Tic Tac Toe</p>
-            <h1 id="turnText">Dean ist am Zug</h1>
+            <p id="statusText" class="eyebrow">Verbinde...</p>
+            <h1 id="turnText">Spiel wird geladen</h1>
           </div>
-          <button id="newGameButton" class="small-button" type="button">Neues Spiel</button>
+          <button id="newGameButton" class="small-button" type="button">Neue Runde</button>
         </header>
 
-        <div class="score-row" aria-label="Spielstand">
-          <div>
-            <span>Dean</span>
-            <strong id="deanScore">0</strong>
-          </div>
-          <div>
-            <span>Unentschieden</span>
-            <strong id="drawScore">0</strong>
-          </div>
-          <div>
-            <span>Andere Person</span>
-            <strong id="otherScore">0</strong>
-          </div>
+        <div class="share-box">
+          <span id="playerText">Du spielst als Dean.</span>
+          <button id="copyLinkButton" class="text-button" type="button">Link kopieren</button>
         </div>
 
         <div id="board" class="board" aria-label="Tic Tac Toe Spielfeld"></div>
 
         <footer class="footer">
-          <span id="playerText">Du spielst als Dean.</span>
+          <span id="messageText">Warte kurz...</span>
           <button id="switchPlayerButton" class="text-button" type="button">Person wechseln</button>
         </footer>
       </section>
