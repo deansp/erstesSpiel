@@ -1,4 +1,5 @@
 const SUPABASE_REST_URL = "https://uyyeyeyiwwwwnsdlyvgn.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://uyyeyeyiwwwwnsdlyvgn.supabase.co";
 const SUPABASE_ANON_KEY =
   "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV5eWV5ZXlpd3d3d25zZGx5dmduIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODMxNjYyMzUsImV4cCI6MjA5ODc0MjIzNX0.8AvFK6Lyet4By7h9uuG0uBUXTiP5QRvyQ4P_OhoCf6c";
 
@@ -42,7 +43,17 @@ let winner = "";
 let isLoading = false;
 let hasError = false;
 let pollingId = null;
+let supabaseClient = null;
+let realtimeChannel = null;
 let winningLine = [];
+
+function getSupabaseClient() {
+  if (!supabaseClient && window.supabase) {
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  }
+
+  return supabaseClient;
+}
 
 function supabaseHeaders(extraHeaders = {}) {
   return {
@@ -87,6 +98,7 @@ async function choosePlayer(name) {
       await createGame();
     }
 
+    startRealtime();
     startPolling();
   } catch (error) {
     showError(error);
@@ -127,7 +139,7 @@ async function loadGame() {
 }
 
 async function saveGame(nextBoard, nextSymbol, nextWinner) {
-  await supabaseRequest(`games?id=eq.${gameId}`, {
+  const [savedGame] = await supabaseRequest(`games?id=eq.${gameId}`, {
     method: "PATCH",
     headers: {
       Prefer: "return=representation",
@@ -140,7 +152,7 @@ async function saveGame(nextBoard, nextSymbol, nextWinner) {
     }),
   });
 
-  await loadGame();
+  applyGame(savedGame);
 }
 
 function applyGame(game) {
@@ -149,6 +161,22 @@ function applyGame(game) {
   winner = game.winner || "";
   winningLine = getWinningLine();
   render();
+}
+
+function broadcastGame(nextBoard, nextSymbol, nextWinner) {
+  if (!realtimeChannel) {
+    return;
+  }
+
+  realtimeChannel.send({
+    type: "broadcast",
+    event: "game-state",
+    payload: {
+      board: nextBoard,
+      current_symbol: nextSymbol,
+      winner: nextWinner || "",
+    },
+  });
 }
 
 async function playTurn(index) {
@@ -164,10 +192,17 @@ async function playTurn(index) {
 
   try {
     hasError = false;
+    applyGame({
+      board: nextBoard,
+      current_symbol: nextSymbol,
+      winner: nextWinner,
+    });
+    broadcastGame(nextBoard, nextSymbol, nextWinner);
     setLoading(true, "Speichere Zug...");
     await saveGame(nextBoard, nextSymbol, nextWinner);
   } catch (error) {
     showError(error);
+    loadGame().catch(console.error);
   } finally {
     setLoading(false);
   }
@@ -182,6 +217,12 @@ async function startNewRound() {
     hasError = false;
     setLoading(true, "Starte neue Runde...");
     const startSymbol = Math.random() < 0.5 ? "X" : "O";
+    applyGame({
+      board: [...emptyBoard],
+      current_symbol: startSymbol,
+      winner: "",
+    });
+    broadcastGame([...emptyBoard], startSymbol, "");
     await saveGame([...emptyBoard], startSymbol, "");
   } catch (error) {
     showError(error);
@@ -246,7 +287,10 @@ function updateText() {
   turnText.textContent = `${currentName} ist am Zug`;
   messageText.textContent =
     currentSymbol === mySymbol ? "Du bist dran." : "Warte, bis die andere Person gespielt hat.";
-  statusText.textContent = "Online verbunden";
+
+  if (!isLoading && !hasError && statusText.textContent !== "Live verbunden") {
+    statusText.textContent = "Online verbunden";
+  }
 }
 
 function getGameResult(testBoard) {
@@ -283,14 +327,61 @@ function startPolling() {
     if (!isLoading && gameId) {
       loadGame().catch(showError);
     }
-  }, 1800);
+  }, 500);
+}
+
+function startRealtime() {
+  const client = getSupabaseClient();
+
+  if (!client || !gameId) {
+    statusText.textContent = "Online verbunden";
+    window.setTimeout(() => {
+      if (gameId && !realtimeChannel) {
+        startRealtime();
+      }
+    }, 500);
+    return;
+  }
+
+  if (realtimeChannel) {
+    client.removeChannel(realtimeChannel);
+  }
+
+  realtimeChannel = client
+    .channel(`game-${gameId}`)
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "games",
+        filter: `id=eq.${gameId}`,
+      },
+      (payload) => {
+        if (payload.new) {
+          hasError = false;
+          applyGame(payload.new);
+        }
+      },
+    )
+    .on("broadcast", { event: "game-state" }, (message) => {
+      if (message.payload) {
+        hasError = false;
+        applyGame(message.payload);
+      }
+    })
+    .subscribe((status) => {
+      if (status === "SUBSCRIBED" && !hasError) {
+        statusText.textContent = "Live verbunden";
+      }
+    });
 }
 
 function setLoading(value, text = "") {
   isLoading = value;
 
   if (!hasError) {
-    statusText.textContent = value ? text : "Online verbunden";
+    statusText.textContent = value ? text : realtimeChannel ? "Live verbunden" : "Online verbunden";
   }
 
   render();
@@ -328,6 +419,12 @@ copyLinkButton.addEventListener("click", copyGameLink);
 
 switchPlayerButton.addEventListener("click", () => {
   window.clearInterval(pollingId);
+  const client = getSupabaseClient();
+
+  if (realtimeChannel && client) {
+    client.removeChannel(realtimeChannel);
+    realtimeChannel = null;
+  }
   gameScreen.classList.add("is-hidden");
   identityScreen.classList.remove("is-hidden");
 });

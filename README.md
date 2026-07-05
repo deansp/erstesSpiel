@@ -17,6 +17,7 @@ Ein schlichtes Tic-Tac-Toe-Spiel fuer den Webbrowser. Zwei Personen koennen mit 
 - Ob Dean oder die andere Person beginnt, wird pro Runde zufaellig entschieden.
 - Oben steht immer, wer gerade am Zug ist.
 - Der Spielstand wird in Supabase gespeichert.
+- Mit Supabase Realtime werden Zuege direkt an den anderen Browser geschickt.
 
 ## Mit Freund spielen
 
@@ -25,6 +26,8 @@ Ein schlichtes Tic-Tac-Toe-Spiel fuer den Webbrowser. Zwei Personen koennen mit 
 3. Dean klickt "Link kopieren".
 4. Dean schickt den Link an den Freund.
 5. Der Freund oeffnet den Link und waehlt "Gast".
+
+Wenn oben "Live verbunden" steht, ist die schnelle Verbindung aktiv. Wenn dort nur "Online verbunden" steht, funktioniert das Spiel trotzdem, fragt aber regelmaessig bei Supabase nach.
 
 ## Dateien
 
