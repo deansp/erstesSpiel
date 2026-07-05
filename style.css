@@ -144,6 +144,13 @@ h1 {
   line-height: 1.35;
 }
 
+.game-id {
+  display: block;
+  margin-top: 5px;
+  color: rgba(83, 61, 41, 0.68);
+  font-size: 0.86rem;
+}
+
 .board {
   position: relative;
   display: grid;

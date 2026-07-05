@@ -27,6 +27,8 @@ Ein schlichtes Tic-Tac-Toe-Spiel fuer den Webbrowser. Zwei Personen koennen mit 
 4. Dean schickt den Link an den Freund.
 5. Der Freund oeffnet den Link und waehlt "Gast".
 
+Wichtig: Der Gast darf nicht nur die normale Startseite oeffnen. Er muss den kopierten Link mit `?game=...` benutzen. Sonst seid ihr in verschiedenen Partien.
+
 Wenn oben "Live verbunden" steht, ist die schnelle Verbindung aktiv. Wenn dort nur "Online verbunden" steht, funktioniert das Spiel trotzdem, fragt aber regelmaessig bei Supabase nach.
 
 ## Dateien

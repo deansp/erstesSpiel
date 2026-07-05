@@ -10,6 +10,7 @@ const turnText = document.querySelector("#turnText");
 const statusText = document.querySelector("#statusText");
 const messageText = document.querySelector("#messageText");
 const playerText = document.querySelector("#playerText");
+const gameIdText = document.querySelector("#gameIdText");
 const newGameButton = document.querySelector("#newGameButton");
 const copyLinkButton = document.querySelector("#copyLinkButton");
 const switchPlayerButton = document.querySelector("#switchPlayerButton");
@@ -92,6 +93,10 @@ async function choosePlayer(name) {
     hasError = false;
     setLoading(true, "Verbinde...");
 
+    if (!gameId && selectedPlayer === "Gast") {
+      throw new Error("Gast braucht den Link von Dean.");
+    }
+
     if (gameId) {
       await loadGame();
     } else {
@@ -151,6 +156,10 @@ async function saveGame(nextBoard, nextSymbol, nextWinner) {
       updated_at: new Date().toISOString(),
     }),
   });
+
+  if (!savedGame) {
+    throw new Error("Der Zug wurde nicht gespeichert.");
+  }
 
   applyGame(savedGame);
 }
@@ -272,11 +281,19 @@ function updateText() {
     ? `Du spielst als ${selectedPlayer} (${mySymbol}).`
     : "Waehle zuerst eine Person.";
 
+  if (hasError) {
+    gameIdText.textContent = gameId ? `Partie: ${gameId.slice(0, 8)}` : "Kein Spiel-Link";
+    return;
+  }
+
   if (!gameId) {
     turnText.textContent = "Partie wird erstellt";
     messageText.textContent = "Gleich bekommst du einen Link zum Teilen.";
+    gameIdText.textContent = "Noch keine Partie";
     return;
   }
+
+  gameIdText.textContent = `Partie: ${gameId.slice(0, 8)}`;
 
   if (winner) {
     turnText.textContent = winner === "Unentschieden" ? "Unentschieden" : `${winner} hat gewonnen`;
@@ -390,8 +407,8 @@ function setLoading(value, text = "") {
 function showError(error) {
   hasError = true;
   statusText.textContent = "Fehler";
-  messageText.textContent =
-    "Supabase ist noch nicht bereit. Pruefe Tabelle, Policies und den anon public key.";
+  turnText.textContent = "Das klappt noch nicht";
+  messageText.textContent = error.message || "Supabase ist noch nicht bereit.";
   console.error(error);
 }
 
